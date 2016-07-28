@@ -5,14 +5,12 @@ const router = require('express').Router(),
   db = require('../../db');
 
 router.param('question_id', function(req, res, next, id) {
-  req.question = id;
-  next();
-  // db.Question.findById(id)
-  //   .then((question) => {
-  //     req.question = question;
-  //     next();
-  //   })
-  //   .catch(next);
+  db.Question.findById(id)
+    .then((question) => {
+      req.question = question;
+      next();
+    })
+    .catch(next);
 });
 
 router.route('/questions')

@@ -82,6 +82,10 @@ class DB {
         return this;
       });
   }
+
+  close() {
+    return sequelize.close();
+  }
 }
 
 module.exports = new DB();
