@@ -8,20 +8,36 @@ const express = require('express'),
   session = require('express-session'),
   bodyParser = require('body-parser'),
   morgan = require('morgan'),
-  routes = require('./routes');
+  routes = require('./routes'),
+  passport = require('passport'),
+  MySQLStore = require('express-mysql-session')(session),
+  sessionStore = new MySQLStore({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+  });
 
 database.connect().then((db) => {
   // Add the http logging middleware
   app.use(morgan('combined'));
 
+  // Useful middleware
   app.use(bodyParser.json());
 
+  // Session middleware
   app.use(session({
     maxAge: 31540000000,
-    secret: 'DNhYi7.w7^8YD=2Q$s?nFcBep@N2Z3V9}w)29BLr[K7V[ubPza',
+    secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    store: sessionStore
   }));
+
+  // Passport/auth middleware
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   // Add in the router routes
   app.use(routes);

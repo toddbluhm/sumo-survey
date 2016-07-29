@@ -1,7 +1,9 @@
 "use strict";
 
 const Sequelize = require('sequelize'),
-  sequelize = new Sequelize('sumo-survey', process.env.DB_USER, process.env.DB_PASSWORD, {
+  sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
     dialect: 'mysql'
   }),
   scrypt = require('scrypt');
@@ -49,15 +51,14 @@ User.prototype.setPassword = function(password) {
 };
 
 User.prototype.verifyPassword = function(password) {
-  console.log("Verifying Password");
-  return scrypt.verifyKdf(this.password_hash, password);
+  return scrypt.verifyKdf(new Buffer(this.password_hash, "base64"), new Buffer(password));
 };
 
 // Relationships
 Question.hasMany(Answer, {
   onDelete: 'CASCADE'
 });
-User.belongsTo(Question, {
+User.hasMany(Question, {
   onDelete: 'CASCADE'
 });
 

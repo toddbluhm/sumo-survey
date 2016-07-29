@@ -7,8 +7,8 @@ const router = require('express').Router(),
 router.param('question_id', function(req, res, next, id) {
   db.Question.findOne({
       where: {
-        id: id
-          //userId: comes from req.passport
+        id: id,
+        userId: req.user.id
       }
     })
     .then((question) => {

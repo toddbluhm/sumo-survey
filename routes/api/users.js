@@ -4,6 +4,7 @@ const router = require('express').Router(),
   valid = require('validator'),
   db = require('../../db');
 
+// Simple helper function for testing if an email already exists in the DB
 function IsExistingEmail(email) {
   return db.User.count({
       where: {
@@ -20,6 +21,13 @@ function IsExistingEmail(email) {
 
 router.route('/users')
   .post((req, res) => {
+
+    // If the user is already logged in, then they can't create a new user
+    if(req.user) {
+      return res.status(400).end();
+    }
+
+    // Validate that the email is an email
     if (!valid.isEmail(req.body.email)) {
       return res.status(400).json({
         message: "Invalid email address provided.",
@@ -28,17 +36,20 @@ router.route('/users')
       }).end();
     }
 
+    // validate the password length
     if (!valid.isLength(req.body.password, { min:7 })) {
       return res.status(400).json({
-        message: "Password must be greater than 6 characters.",
+        message: "Password must be 7 characters or greater.",
         name: "password"
       });
     }
 
+    // Make sure that the email has not already been used
     IsExistingEmail(req.body.email)
       .then((isExistingEmail) => {
+
+        // If an email already exists return an error
         if (isExistingEmail) {
-          // If we found errors then return an error status with an array of errors
           return res.status(400).json({
             message: "This email address has already been used.",
             name: "email",
@@ -46,10 +57,12 @@ router.route('/users')
           });
         }
 
+        // Create a user instance, but don't save until after the password is set
         const User = db.User.build({
           email: req.body.email
         });
 
+        // Create the users hashed+salted password using Scrypt
         User.setPassword(req.body.password)
           .then(() => {
             return User.save();
