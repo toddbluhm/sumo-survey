@@ -5,7 +5,12 @@ const router = require('express').Router(),
   db = require('../../db');
 
 router.param('question_id', function(req, res, next, id) {
-  db.Question.findById(id)
+  db.Question.findOne({
+      where: {
+        id: id
+          //userId: comes from req.passport
+      }
+    })
     .then((question) => {
       req.question = question;
       next();
@@ -15,33 +20,76 @@ router.param('question_id', function(req, res, next, id) {
 
 router.route('/questions/:question_id/answers')
   .get((req, res) => {
-    console.log(`Answers Get ${req.question}`);
-    res.status("500").end();
+    req.question.getAnswers()
+      .then((answers) => {
+        res.status(200).json(answers).end();
+      })
+      .catch((err) => {
+        console.log(err.message || err);
+        res.status(400).end();
+      });
   })
   .post((req, res) => {
-    console.log(`Answers Post ${req.question}`);
-    res.status("500").end();
+    if (!req.body.text && req.body.text != '') {
+      return res.status(400).json({
+        message: "Missing required param text",
+        name: "text",
+        value: req.body.text
+      });
+    }
+
+    req.question.createAnswer({
+        text: valid.escape(req.body.text),
+        result: 0
+      })
+      .then((answer) => {
+        res.status(200).json(answer).end();
+      })
+      .catch((err) => {
+        console.log(err.message || err);
+        res.status(400).end();
+      });
   });
 
 router.param('answer_id', function(req, res, next, id) {
-  req.answer = id;
-  next();
-  // db.Answer.findById(id)
-  //   .then((answer) => {
-  //     req.anwser = answer;
-  //     next();
-  //   })
-  //   .catch(next);
+  db.Answer.findOne({
+      where: {
+        id: id,
+        questionId: req.question.id
+      }
+    })
+    .then((answer) => {
+      req.answer = answer;
+      next();
+    })
+    .catch(next);
 });
 
 router.route('/questions/:question_id/answers/:answer_id')
   .patch((req, res) => {
-    console.log(`Answers Patch ${req.question}:${req.answer}`);
-    res.status("500").end();
+
+    if(req.body.text) {
+      req.answer.text = valid.escape(req.body.text);
+    }
+
+    req.answer.save()
+      .then(() => {
+        res.status(200).json(req.answer).end();
+      })
+      .catch((err) => {
+        console.log(err.message || err);
+        res.status(400).end();
+      });
   })
   .delete((req, res) => {
-    console.log(`Answers Delete ${req.question}:${req.answer}`);
-    res.status("500").end();
+    req.answer.destroy()
+      .then(() => {
+        res.status(200).end();
+      })
+      .catch((err) => {
+        console.log(err.message || err);
+        res.status(400).end();
+      });
   });
 
 module.exports = router

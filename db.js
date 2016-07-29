@@ -54,8 +54,12 @@ User.prototype.verifyPassword = function(password) {
 };
 
 // Relationships
-Answer.belongsTo(Question);
-Question.belongsTo(User);
+Question.hasMany(Answer, {
+  onDelete: 'CASCADE'
+});
+User.belongsTo(Question, {
+  onDelete: 'CASCADE'
+});
 
 // DB Manager Class
 class DB {
