@@ -1,7 +1,7 @@
 "use strict";
 
 const router = require('express').Router(),
-  db = require('../db'),
+  db = require('../../../db'),
   passport = require('passport'),
   LocalStrategy = require('passport-local').Strategy,
   valid = require('validator');
@@ -59,10 +59,6 @@ passport.use(new LocalStrategy({
 ));
 
 router.route('/login')
-  .post(
-    passport.authenticate('local', {
-      successRedirect: '/admin'
-    })
-  );
+  .post(passport.authenticate('local'));
 
 module.exports = router;

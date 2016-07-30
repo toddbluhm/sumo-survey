@@ -2,7 +2,7 @@
 
 const router = require('express').Router(),
   valid = require('validator'),
-  db = require('../../db');
+  db = require('../../../db');
 
 // Simple helper function for testing if an email already exists in the DB
 function IsExistingEmail(email) {
@@ -63,7 +63,7 @@ router.route('/users')
         });
 
         // Create the users hashed+salted password using Scrypt
-        User.setPassword(req.body.password)
+        return User.setPassword(req.body.password)
           .then(() => {
             return User.save();
           })

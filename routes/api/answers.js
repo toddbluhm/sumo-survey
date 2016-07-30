@@ -4,7 +4,7 @@ const router = require('express').Router(),
   valid = require('validator'),
   db = require('../../db');
 
-router.param('question_id', function(req, res, next, id) {
+router.param('question_id', (req, res, next, id) => {
   db.Question.findOne({
       where: {
         id: id,
@@ -51,7 +51,7 @@ router.route('/questions/:question_id/answers')
       });
   });
 
-router.param('answer_id', function(req, res, next, id) {
+router.param('answer_id', (req, res, next, id) => {
   db.Answer.findOne({
       where: {
         id: id,

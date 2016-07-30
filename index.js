@@ -25,6 +25,8 @@ database.connect().then((db) => {
 
   // Useful middleware
   app.use(bodyParser.json());
+  app.set('view engine', 'pug');
+  app.set('views', __dirname + "/views");
 
   // Session middleware
   app.use(session({
@@ -43,7 +45,7 @@ database.connect().then((db) => {
   app.use(routes);
 
   // Add in the static routes
-  app.use('/', express.static(__dirname + '/public'));
+  app.use('/static', express.static(__dirname + '/public'));
 
   console.log(`App started and listen at ${process.env.HOST}:${process.env.PORT}`);
   app.listen(process.env.PORT, process.env.HOST);
