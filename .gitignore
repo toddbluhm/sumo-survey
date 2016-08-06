@@ -38,3 +38,7 @@ jspm_packages
 
 # Environment vars file
 .env
+
+# Ignore the build directory
+./build
+./assets

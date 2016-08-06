@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const Database = require('../db'),
+const Database = require('../db').database,
   faker = require('faker'),
   chalk = require('chalk'),
   valid = require('validator'),
