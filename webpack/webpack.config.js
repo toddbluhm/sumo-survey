@@ -1,46 +1,70 @@
-require('dotenv').config();
+require('dotenv').config()
 
-const webpack = require('webpack'),
-  path = require('path'),
-  rootFolder = path.resolve(__dirname, '..');
+const webpack = require('webpack')
+const path = require('path')
+const rootFolder = path.resolve(__dirname, '..')
+const WebpackIsomorphicToolsPlugin = require('webpack-isomorphic-tools/plugin')
+const webpackIsomorphicToolsPlugin = new WebpackIsomorphicToolsPlugin(
+  require('./webpack-isomorphic-tools-configuration')).development()
+const autoprefixer = require('autoprefixer')
+const DEBUG = true
 
 module.exports = {
-  devtool: 'eval',
+  debug: DEBUG,
+  devtool: 'inline-cheap-eval-source-map',
   // resolve all relative paths from the project root folder
-	context: rootFolder,
-  // Important! Do not remove ''. If you do, imports without
-  // an extension won't work anymore!
+  context: rootFolder,
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['', '.js', '.jsx', '.scss'],
+    modulesDirectories: [
+      'node_modules',
+      path.resolve(__dirname, '../node_modules')
+    ]
   },
   entry: [
+    'react-hot-loader/patch',
+    `webpack-hot-middleware/client?path=http://${process.env.HOST}:${process.env.WEBPACK_PORT}/__webpack_hmr`,
+    'classnames',
     './app/client.jsx'
   ],
   output: {
     path: `${rootFolder}/assets`,
     filename: 'bundle.js',
-    publicPath: '/assets/'
+    publicPath: `http://${process.env.HOST}:${process.env.WEBPACK_PORT}/assets/`,
+    chunkFilename: '[name]-[chunkhash].js'
   },
-  plugins: [
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.NoErrorsPlugin()
-  ],
   module: {
     loaders: [{
       test: /\.jsx?$/,
       exclude: /(node_modules|bower_components)/,
-      // Enable caching for improved performance during development
-      // It uses default OS directory by default. If you need
-      // something more custom, pass a path to it.
-      // I.e., babel?cacheDirectory=<path>
-      loaders: ['babel'],
-      // Parse only app files! Without this it will go through
-      // the entire project. In addition to being slow,
-      // that will most likely result in an error.
-      // include: "./app"
+      loaders: ['react-hot-loader/webpack', 'babel']
     }, {
-      test: /\.css$/,
-      loader: "style!css"
+      test: /(\.scss|\.css)$/,
+      loader: 'classnames!style!css?sourceMap&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss!sass'
+    }, {
+      test: webpackIsomorphicToolsPlugin.regular_expression('images'),
+      loader: 'url-loader?limit=30000&name=[name]-[hash].[ext]'
+    }, {
+      test: webpackIsomorphicToolsPlugin.regular_expression('fonts'),
+      loader: 'url-loader?limit=30000&name=[name]-[hash].[ext]'
     }]
+  },
+  postcss: [autoprefixer({
+    browsers: ['last 2 versions']
+  })],
+  plugins: [
+    new webpack.NoErrorsPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    webpackIsomorphicToolsPlugin
+  ],
+  devServer: {
+    hot: true,
+    inline: true,
+    port: process.env.WEBPACK_PORT,
+    host: process.env.HOST,
+    colors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    }
   }
-};
+}

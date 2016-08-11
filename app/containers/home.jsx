@@ -1,10 +1,8 @@
-import React, { Component } from 'react';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { Menu } from '../components/menu';
-import { changeHomeText } from '../actions/test';
-import { push } from 'react-router-redux';
-import { asyncConnect } from 'redux-connect';
+import React, { Component } from 'react'
+import { changeHomeText } from '../actions/test'
+import { push } from 'react-router-redux'
+import { asyncConnect } from 'redux-connect'
+import RaisedButton from 'material-ui/RaisedButton'
 
 @asyncConnect([],
   state => ({
@@ -13,14 +11,23 @@ import { asyncConnect } from 'redux-connect';
   { changeHomeText, pushNavigation: push }
 )
 export class Home extends Component {
-  render() {
+  render () {
     return (
       <div>
-        <div>Test Hello!!</div>
-        <div>{ this.props.text }</div>
-        <div><a onClick={() => this.props.changeHomeText("Hello World!")}>Click here to change text </a></div>
-        <div><a onClick={() => this.props.pushNavigation("/login")}>Go To Login Page </a></div>
+        <div>
+          Test Hello!!
+        </div>
+        <div>
+          {this.props.text}
+        </div>
+        <RaisedButton label='Click to Change Text' onClick={() => this.props.changeHomeText('Hello World!')} primary/>,
+        <div>
+          <a>Click here to change text</a>
+        </div>
+        <div>
+          <a onClick={() => this.props.pushNavigation('/login')}>Go To Login Page</a>
+        </div>
       </div>
-    );
+    )
   }
 }

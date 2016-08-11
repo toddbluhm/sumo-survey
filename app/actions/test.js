@@ -1,4 +1,4 @@
-import { createAction } from 'redux-actions';
+import { createAction } from 'redux-actions'
 
-export const CHANGEHOMETEXT = 'CHANGE_HOME_TEXT';
-export const changeHomeText = createAction(CHANGEHOMETEXT);
+export const CHANGE_HOME_TEXT = 'CHANGE_HOME_TEXT'
+export const changeHomeText = createAction(CHANGE_HOME_TEXT)
