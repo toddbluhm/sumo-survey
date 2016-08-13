@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
-import { Root as MainRoot } from './containers/root'
+import { Root as MainRoot } from './containers/Root'
 import { syncHistoryWithStore } from 'react-router-redux'
 import { configureStore } from './store'
 import { browserHistory } from 'react-router'
@@ -22,24 +22,25 @@ function renderApp (Root) {
       <Root store={store} history={history} />
     </AppContainer>,
     rootEl)
+  // render(
+  //   <Root store={store} history={history} />,
+  //   rootEl)
 }
 
 renderApp(MainRoot)
 
-// render(
-//     <App store={store} history={history} routes={routes} />,
-//   rootEl)
+
 
 if (module.hot) {
-  module.hot.accept('./containers/root', () => {
+  module.hot.accept('./containers/Root', () => {
     console.log('Reloading Root')
-    renderApp(require('./containers/root').Root)
+    renderApp(require('./containers/Root').Root)
   })
 
   // Enable Webpack hot module replacement for reducers
   module.hot.accept('./reducers', () => {
     console.log('Reloading Reducers')
     store.replaceReducer(require('./reducers').rootReducer)
-    renderApp(require('./containers/root').Root)
+    renderApp(require('./containers/Root').Root)
   })
 }

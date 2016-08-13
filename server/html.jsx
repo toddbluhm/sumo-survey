@@ -4,9 +4,9 @@ import serialize from 'serialize-javascript'
 
 export class Html extends Component {
   static propTypes = {
-    assets: PropTypes.object,
-    component: PropTypes.object,
-    store: PropTypes.object
+    assets: PropTypes.object.isRequired,
+    component: PropTypes.element.isRequired,
+    store: PropTypes.object.isRequired
   }
 
   render () {

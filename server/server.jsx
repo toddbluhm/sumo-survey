@@ -95,7 +95,9 @@ export function Init (webpackIsomorphicTools) {
               </Provider>
             )
 
-            global.navigator = {userAgent: req.headers['user-agent']}
+            global.navigator = {
+              userAgent: req.headers['user-agent']
+            }
 
             return res.status(200).send(
               renderToString(

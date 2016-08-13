@@ -1,0 +1,7 @@
+{
+  "javascript": {
+    "main": "http://10.0.0.136:9002/assets/bundle.js"
+  },
+  "styles": {},
+  "assets": {}
+}

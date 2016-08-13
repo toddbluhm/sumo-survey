@@ -7,10 +7,9 @@ const WebpackIsomorphicToolsPlugin = require('webpack-isomorphic-tools/plugin')
 const webpackIsomorphicToolsPlugin = new WebpackIsomorphicToolsPlugin(
   require('./webpack-isomorphic-tools-configuration')).development()
 const autoprefixer = require('autoprefixer')
-const DEBUG = true
 
 module.exports = {
-  debug: DEBUG,
+  debug: false,
   devtool: 'inline-cheap-eval-source-map',
   // resolve all relative paths from the project root folder
   context: rootFolder,
@@ -55,6 +54,9 @@ module.exports = {
   plugins: [
     new webpack.NoErrorsPlugin(),
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.API_URL': JSON.stringify(process.env.API_URL)
+    }),
     webpackIsomorphicToolsPlugin
   ],
   devServer: {

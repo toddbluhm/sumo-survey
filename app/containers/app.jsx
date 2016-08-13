@@ -2,13 +2,11 @@ import React, { Component, PropTypes } from 'react'
 import MediaQuery from 'react-responsive'
 import { MuiThemeProvider } from 'material-ui'
 import { ActionExitToApp, ContentAddBox } from 'material-ui/svg-icons'
-import { DesktopApp } from './desktopApp'
-import { MobileApp } from './mobileApp'
+import { DesktopAppBar, MobileAppBar, ContentArea } from '../components'
 
 export class App extends Component {
   static propTypes = {
-    toggleAppDrawerActive: PropTypes.func,
-    drawerActive: PropTypes.bool
+    children: PropTypes.element.isRequired
   }
 
   render () {
@@ -25,12 +23,13 @@ export class App extends Component {
         <div>
           {/* Desktop or Laptop*/}
           <MediaQuery minDeviceWidth={1225} values={{deviceWidth: 1000}}>
-            <DesktopApp {...appProps} />
+            <DesktopAppBar {...appProps} />
           </MediaQuery>
           {/* Table or mobile phone*/}
           <MediaQuery maxDeviceWidth={1224} values={{deviceWidth: 1000}}>
-            <MobileApp {...appProps} />
+            <MobileAppBar {...appProps} />
           </MediaQuery>
+          <ContentArea>{this.props.children}</ContentArea>
         </div>
       </MuiThemeProvider>
     )

@@ -2,7 +2,7 @@ const webpackIsomorphicToolsPlugin = require('webpack-isomorphic-tools/plugin')
 const path = require('path')
 
 module.exports = {
-  debug: true,
+  debug: false,
   webpack_assets_file_path: './build/webpack-assets.json',
   webpack_stats_file_path: './build/webpack-stats.json',
   modulesDirectories: [
