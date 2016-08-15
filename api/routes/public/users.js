@@ -2,7 +2,7 @@
 
 const router = require('express').Router(),
   valid = require('validator'),
-  db = require('../../../common/db').database;
+  db = require('../../db').database;
 
 // Simple helper function for testing if an email already exists in the DB
 function IsExistingEmail(email) {

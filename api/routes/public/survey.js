@@ -1,7 +1,7 @@
 'use strict'
 
 const router = require('express').Router()
-const db = require('../../../common/db').database
+const db = require('../../db').database
 const utils = require('../../utils')
 
 router.route('/survey')
@@ -106,11 +106,9 @@ router.route('/survey/:survey_id')
 
         return res.status(200).end()
       })
-      .catch((e) => {
-        return res.status(400).json({
-          message: 'Incorrect answer id given for survey question.'
-        })
-      })
+      .catch((e) => res.status(400).json({
+        message: 'Incorrect answer id given for survey question.'
+      }))
   })
 
 router.route('/survey/:survey_id/dismiss')
