@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux-immutable'
-import { reducer as reduxAsyncConnect, setToImmutableStateFunc, setToMutableStateFunc } from 'redux-connect'
+import { immutableReducer as reduxAsyncConnect, setToImmutableStateFunc, setToMutableStateFunc } from 'redux-connect'
 import { reducer as routerReducer } from './routerReducer'
 import { default as Immutable } from 'immutable'
 import { reducer as ui } from './ui'

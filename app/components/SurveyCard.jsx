@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { dismissSurvey } from '../actions/survey'
 import MediaQuery from 'react-responsive'
-import { Card, CardActions, CardHeader, CardText, RaisedButton, IconButton } from 'material-ui'
+import { Card, CardActions, CardHeader, CardTitle, CardText, RaisedButton, IconButton } from 'material-ui'
 import { NavigationClose } from 'material-ui/svg-icons'
 import { grey300, grey500 } from 'material-ui/styles/colors'
 
@@ -71,14 +71,14 @@ export class SurveyCard extends Component {
 
     return (
       <Card style={styles.any.cardStyle}>
-        <CardHeader title={"Survey Question"}>
+        <CardTitle title={"Survey Question"}>
           <IconButton
             style={styles.any.cardCloseStyle}
             tooltip={"Dismiss Survey"}
             onClick={() => dismissSurvey(question.id)}>
             <NavigationClose color={grey300} hoverColor={grey500} />
           </IconButton>
-        </CardHeader>
+        </CardTitle>
         <CardText>
           {question.text}
         </CardText>

@@ -1,5 +1,4 @@
+export * from './AppBar'
 export * from './AppBarButton'
-export * from './MobileAppBar'
-export * from './DesktopAppBar'
 export * from './SurveyCard'
 export * from './ContentArea'

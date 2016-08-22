@@ -2,6 +2,7 @@
 
 import express from 'express'
 import morgan from 'morgan'
+import { default as cookieParser } from 'cookie-parser'
 
 import React from 'react'
 import { renderToString } from 'react-dom/server'
@@ -11,11 +12,15 @@ import { Provider } from 'react-redux'
 import { configureStore } from '../app/store'
 import { getRoutes } from '../app/routes'
 import { Html } from './html'
+import { default as Immutable } from 'immutable'
+const jwt = require('jsonwebtoken')
+const uuid = require('node-uuid')
 
 export function Init (webpackIsomorphicTools) {
   const app = express()
   // Add the http logging middleware
   app.use(morgan('combined'))
+  app.use(cookieParser(process.env.COOKIE_SECRET))
 
   app.disable('x-powered-by')
 
@@ -32,6 +37,33 @@ export function Init (webpackIsomorphicTools) {
   //   app.use('/assets', express.static(__dirname + '/assets'))
   // }
 
+  app.use((req, res, next) => {
+    // If no cookie then this must be a first time visitor
+    if (!req.signedCookies.jwt) {
+      // Create the guest jwt token
+      const token = jwt.sign({
+        sessionId: uuid.v4(),
+        permissions: [
+          'guest'
+        ]
+      }, process.env.JWT_SECRET, {
+        issuer: process.env.JWT_ISSUER,
+        audience: process.env.JWT_AUDIENCE,
+        subject: process.env.JWT_SUBJECT
+      })
+
+      res.cookie('jwt', token, {
+        signed: true,
+        domain: process.env.HOST,
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 365 // 1 year
+      })
+
+      req.signedCookies.jwt = token
+    }
+    next()
+  })
+
   // Pass off handling of all other routes to React Router
   app.get('*', function (req, res) {
     // clear require() cache if in development mode
@@ -40,7 +72,12 @@ export function Init (webpackIsomorphicTools) {
       webpackIsomorphicTools.refresh()
     }
 
-    const store = configureStore()
+    // on render pass the jwt token from the cookie into the react store for api authorization
+    const store = configureStore(Immutable.fromJS({
+      auth: {
+        jwt: req.signedCookies.jwt
+      }
+    }))
     const routes = getRoutes(store)
 
     // Note that req.url here should be the full URL path from

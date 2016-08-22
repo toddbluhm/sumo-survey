@@ -11,6 +11,7 @@ const routes = require('./routes').routes
 const passport = require('passport')
 require('./auth')
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 
 database.connect().then((db) => {
   // Add the http logging middleware
@@ -22,6 +23,7 @@ database.connect().then((db) => {
   }))
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(cookieParser(process.env.COOKIE_SECRET))
   app.disable('x-powered-by')
 
   // Session middleware

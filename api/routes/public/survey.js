@@ -4,12 +4,19 @@ const router = require('express').Router()
 const db = require('../../db').database
 const utils = require('../../utils')
 
+function saveSession (sessionId, session) {
+  return db.Session.upsert({
+    sessionId: sessionId,
+    data: JSON.stringify(session)
+  })
+}
+
 router.route('/survey')
   .get((req, res) => {
     db.Question.findAll({
       where: {
         id: {
-          $notIn: req.session.questionsAnswered || []
+          $notIn: req.session.answered || []
         }
       }
     })
@@ -46,8 +53,8 @@ router.route('/survey')
 
 router.param('survey_id', (req, res, next, id) => {
   // Check to see if the user has already answered this question
-  if (Array.isArray(req.session.questionsAnswered) &&
-    req.session.questionsAnswered.indexOf(id) !== -1) {
+  if (Array.isArray(req.session.answered) &&
+    req.session.answered.indexOf(id) !== -1) {
     return res.status(400).json({
       message: 'You already answered this question'
     }).end()
@@ -98,14 +105,13 @@ router.route('/survey/:survey_id')
       })
       .then(() => {
         // after successful save, add the question to the users session and save it
-        if (!req.session.questionsAnswered) {
-          req.session.questionsAnswered = []
+        if (!req.session.answered) {
+          req.session.answered = []
         }
-        req.session.questionsAnswered.push(req.surveyQuestion.id)
-        req.session.save()
-
-        return res.status(200).end()
+        req.session.answered.push(req.surveyQuestion.id)
+        return saveSession(req.jwt.sessionId, req.session)
       })
+      .then(() => res.status(200).end())
       .catch((e) => res.status(400).json({
         message: 'Incorrect answer id given for survey question.'
       }))
@@ -114,13 +120,13 @@ router.route('/survey/:survey_id')
 router.route('/survey/:survey_id/dismiss')
   .post((req, res) => {
     // The user has chosen to ignore this survey, so don't show it again
-    if (!req.session.questionsAnswered) {
-      req.session.questionsAnswered = []
+    if (!req.session.answered) {
+      req.session.answered = []
     }
-    req.session.questionsAnswered.push(req.surveyQuestion.id)
-    req.session.save()
+    req.session.answered.push(req.surveyQuestion.id)
 
-    return res.status(200).end()
+    saveSession(req.jwt.sessionId, req.session)
+      .then(() => res.status(200).end())
   })
 
 module.exports = router
