@@ -6,16 +6,19 @@ import { TextField, RaisedButton } from 'material-ui'
 import { Main } from './Main'
 import { CardModal } from '../components/CardModal'
 
-@connect(state => ({}), { push })
+@connect(state => ({
+  viewSize: state.getIn(['ui', 'device', 'viewSize'])
+}), { push })
 export class SignUp extends Component {
   static propTypes = {
     open: PropTypes.bool,
     toggleLoginModalActive: PropTypes.func,
-    push: PropTypes.func
+    push: PropTypes.func.isRequired,
+    viewSize: PropTypes.number.isRequired
   }
 
   render () {
-    const { push } = this.props
+    const { push, viewSize } = this.props
 
     const textNode = (
       <div>
@@ -46,7 +49,7 @@ export class SignUp extends Component {
     return (
       <div>
         {/* Desktop or Laptop*/}
-        <MediaQuery minDeviceWidth={1225} values={{deviceWidth: 1000}}>
+        <MediaQuery minDeviceWidth={1225} values={{deviceWidth: viewSize}}>
           <Main />
         </MediaQuery>
         <CardModal

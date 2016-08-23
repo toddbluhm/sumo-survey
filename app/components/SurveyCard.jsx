@@ -9,7 +9,8 @@ import { grey300, grey500 } from 'material-ui/styles/colors'
 @connect(
   state => ({
     question: state.getIn(['survey', 'question']) ? state.getIn(['survey', 'question']).toJS() : null,
-    surveyLoading: state.getIn(['survey', 'loading'])
+    surveyLoading: state.getIn(['survey', 'loading']),
+    viewSize: state.getIn(['ui', 'device', 'viewSize'])
   }), { getRandomSurvey, dismissSurvey })
 export class SurveyCard extends Component {
   static propTypes = {
@@ -17,7 +18,9 @@ export class SurveyCard extends Component {
     question: PropTypes.object,
     surveyLoading: PropTypes.bool.isRequired,
     // Action methods
-    dismissSurvey: PropTypes.func.isRequired
+    dismissSurvey: PropTypes.func.isRequired,
+    getRandomSurvey: PropTypes.func.isRequired,
+    viewSize: PropTypes.number.isRequired
   }
 
   getStyles () {
@@ -51,7 +54,7 @@ export class SurveyCard extends Component {
   render () {
     const styles = this.getStyles()
     const { getRandomSurvey, dismissSurvey } = this.props
-    const { question, surveyLoading } = this.props
+    const { question, surveyLoading, viewSize } = this.props
 
     if (surveyLoading) {
       return (
@@ -87,13 +90,13 @@ export class SurveyCard extends Component {
         </CardText>
         <CardActions>
           {/* Desktop or Laptop*/}
-          <MediaQuery minDeviceWidth={1225} values={{deviceWidth: 1000}}>
+          <MediaQuery minDeviceWidth={1225} values={{deviceWidth: viewSize}}>
             {question.answers.map(answer =>
               <RaisedButton key={answer.id} style={styles.desktop.ActionButtonStyles} label={answer.text} primary />
             )}
           </MediaQuery>
           {/* Table or mobile phone*/}
-          <MediaQuery maxDeviceWidth={1224} values={{deviceWidth: 1000}}>
+          <MediaQuery maxDeviceWidth={1224} values={{deviceWidth: viewSize}}>
             {question.answers.map(answer =>
               <RaisedButton key={answer.id} style={styles.mobile.ActionButtonStyles} label={answer.text} primary fullWidth />
             )}

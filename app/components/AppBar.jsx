@@ -8,14 +8,16 @@ import { AppBarButton } from './'
 import { toggleAppDrawerActive } from '../actions/ui/app'
 
 @connect(state => ({
-  drawerActive: state.getIn(['ui', 'app', 'drawerActive'])
+  drawerActive: state.getIn(['ui', 'app', 'drawerActive']),
+  viewSize: state.getIn(['ui', 'device', 'viewSize'])
 }), { toggleAppDrawerActive, push })
 export class AppBar extends Component {
   static propTypes = {
     // State props
     drawerActive: PropTypes.bool.isRequired,
     toggleAppDrawerActive: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired
+    push: PropTypes.func.isRequired,
+    viewSize: PropTypes.number.isRequired
   }
 
   render () {
@@ -27,19 +29,19 @@ export class AppBar extends Component {
     const loginBtnIcon = <ActionExitToApp />
 
     // State and actions from props
-    const { drawerActive, toggleAppDrawerActive, push } = this.props
+    const { drawerActive, toggleAppDrawerActive, push, viewSize } = this.props
 
     return (
       <div>
         {/* Desktop or Laptop*/}
-        <MediaQuery minDeviceWidth={1225} values={{deviceWidth: 1000}}>
+        <MediaQuery minDeviceWidth={1225} values={{deviceWidth: viewSize}}>
           <AppBarUI showMenuIconButton={false} title={title}>
             <AppBarButton label={signUpBtnLabel} icon={signUpBtnIcon} secondary onClick={() => push('/signup')} />
             <AppBarButton label={loginBtnLabel} icon={loginBtnIcon} onClick={() => push('/login')} />
           </AppBarUI>
         </MediaQuery>
         {/* Table or mobile phone*/}
-        <MediaQuery maxDeviceWidth={1224} values={{deviceWidth: 1000}}>
+        <MediaQuery maxDeviceWidth={1224} values={{deviceWidth: viewSize}}>
           <AppBarUI
             title={title}
             onLeftIconButtonTouchTap={toggleAppDrawerActive}

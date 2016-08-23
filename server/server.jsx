@@ -13,14 +13,16 @@ import { configureStore } from '../app/store'
 import { getRoutes } from '../app/routes'
 import { Html } from './html'
 import { default as Immutable } from 'immutable'
-const jwt = require('jsonwebtoken')
-const uuid = require('node-uuid')
+import { default as jwt } from 'jsonwebtoken'
+import { default as uuid } from 'node-uuid'
+import { default as device } from 'express-device'
 
 export function Init (webpackIsomorphicTools) {
   const app = express()
   // Add the http logging middleware
   app.use(morgan('combined'))
   app.use(cookieParser(process.env.COOKIE_SECRET))
+  app.use(device.capture())
 
   app.disable('x-powered-by')
 
@@ -74,6 +76,12 @@ export function Init (webpackIsomorphicTools) {
 
     // on render pass the jwt token from the cookie into the react store for api authorization
     const store = configureStore(Immutable.fromJS({
+      ui: {
+        device: {
+          isMobileDevice: res.locals.is_mobile,
+          viewSize: res.locals.is_mobile ? 1000 : 1600
+        }
+      },
       auth: {
         jwt: req.signedCookies.jwt
       }
