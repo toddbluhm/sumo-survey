@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import MediaQuery from 'react-responsive'
+import { push } from 'react-router-redux'
 import { AppBar as AppBarUI, Drawer, MenuItem } from 'material-ui'
 import { ActionExitToApp, ContentAddBox } from 'material-ui/svg-icons'
 import { AppBarButton } from './'
@@ -8,12 +9,13 @@ import { toggleAppDrawerActive } from '../actions/ui/app'
 
 @connect(state => ({
   drawerActive: state.getIn(['ui', 'app', 'drawerActive'])
-}), { toggleAppDrawerActive })
+}), { toggleAppDrawerActive, push })
 export class AppBar extends Component {
   static propTypes = {
     // State props
     drawerActive: PropTypes.bool.isRequired,
-    toggleAppDrawerActive: PropTypes.func.isRequired
+    toggleAppDrawerActive: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired
   }
 
   render () {
@@ -25,15 +27,15 @@ export class AppBar extends Component {
     const loginBtnIcon = <ActionExitToApp />
 
     // State and actions from props
-    const { drawerActive, toggleAppDrawerActive } = this.props
+    const { drawerActive, toggleAppDrawerActive, push } = this.props
 
     return (
       <div>
         {/* Desktop or Laptop*/}
         <MediaQuery minDeviceWidth={1225} values={{deviceWidth: 1000}}>
           <AppBarUI showMenuIconButton={false} title={title}>
-            <AppBarButton label={signUpBtnLabel} icon={signUpBtnIcon} secondary />
-            <AppBarButton label={loginBtnLabel} icon={loginBtnIcon} />
+            <AppBarButton label={signUpBtnLabel} icon={signUpBtnIcon} secondary onClick={() => push('/signup')} />
+            <AppBarButton label={loginBtnLabel} icon={loginBtnIcon} onClick={() => push('/login')} />
           </AppBarUI>
         </MediaQuery>
         {/* Table or mobile phone*/}

@@ -1,24 +1,26 @@
 import React, { Component, PropTypes } from 'react'
 import MediaQuery from 'react-responsive'
-import { Card, CardActions, CardHeader, CardText, RaisedButton } from 'material-ui'
+import { Card, CardActions, CardHeader, CardText, Dialog } from 'material-ui'
 
 export class CardModal extends Component {
   static propTypes = {
     title: PropTypes.string,
     textNode: PropTypes.node,
-    actionNode: PropTypes.node
+    actionNode: PropTypes.node,
+    open: PropTypes.bool,
+    handleClose: PropTypes.func
   }
 
   getStyles () {
     return {
       mobile: {
-        ActionButtonStyles: {
-          margin: '0.5rem 0'
+        cardHeader: {
+          fontSize: '22px'
         }
       },
       desktop: {
-        ActionButtonStyles: {
-          margin: '0.5rem'
+        dialog: {
+          maxWidth: '22rem'
         }
       },
       any: {
@@ -38,15 +40,26 @@ export class CardModal extends Component {
   }
 
   render () {
+    const { title, textNode, actionNode, open, handleClose, style } = this.props
+    const styles = this.getStyles()
     return (
       <div>
         {/* Desktop or Laptop*/}
         <MediaQuery minDeviceWidth={1225} values={{deviceWidth: 1000}}>
+          <Dialog
+            title={title}
+            contentStyle={styles.desktop.dialog}
+            actions={actionNode}
+            modal={false}
+            open={open}
+            onRequestClose={handleClose}>
+            {textNode}
+          </Dialog>
         </MediaQuery>
         {/* Table or mobile phone*/}
         <MediaQuery maxDeviceWidth={1224} values={{deviceWidth: 1000}}>
           <Card style={styles.any.cardStyle}>
-            <CardHeader title={title} />
+            <CardHeader title={title} style={styles.mobile.cardHeader} />
             <CardText>
               {textNode}
             </CardText>

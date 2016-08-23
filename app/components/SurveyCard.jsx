@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { dismissSurvey } from '../actions/survey'
+import { getRandomSurvey, dismissSurvey } from '../actions/survey'
 import MediaQuery from 'react-responsive'
-import { Card, CardActions, CardHeader, CardTitle, CardText, RaisedButton, IconButton } from 'material-ui'
+import { Card, CardActions, CardTitle, CardText, RaisedButton, IconButton } from 'material-ui'
 import { NavigationClose } from 'material-ui/svg-icons'
 import { grey300, grey500 } from 'material-ui/styles/colors'
 
@@ -10,7 +10,7 @@ import { grey300, grey500 } from 'material-ui/styles/colors'
   state => ({
     question: state.getIn(['survey', 'question']) ? state.getIn(['survey', 'question']).toJS() : null,
     surveyLoading: state.getIn(['survey', 'loading'])
-  }), { dismissSurvey })
+  }), { getRandomSurvey, dismissSurvey })
 export class SurveyCard extends Component {
   static propTypes = {
     // State
@@ -50,7 +50,7 @@ export class SurveyCard extends Component {
 
   render () {
     const styles = this.getStyles()
-    const { dismissSurvey } = this.props
+    const { getRandomSurvey, dismissSurvey } = this.props
     const { question, surveyLoading } = this.props
 
     if (surveyLoading) {
@@ -75,7 +75,10 @@ export class SurveyCard extends Component {
           <IconButton
             style={styles.any.cardCloseStyle}
             tooltip={"Dismiss Survey"}
-            onClick={() => dismissSurvey(question.id)}>
+            onClick={() => {
+              dismissSurvey(question.id)
+                .then(() => getRandomSurvey())
+            }}>
             <NavigationClose color={grey300} hoverColor={grey500} />
           </IconButton>
         </CardTitle>

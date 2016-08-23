@@ -24,14 +24,10 @@ export const getRandomSurvey = createAction(GET_RANDOM_SURVEY, () => {
 export const DISMISS_SURVEY = 'DISMISS_SURVEY'
 export const dismissSurvey = createAction(DISMISS_SURVEY, (surveyId) => {
   return FetchAPI(`/survey/${surveyId}/dismiss`, { method: 'POST' })
-    .then(res => BPromise.props({
-      res,
-      body: res.json()
-    }))
     .then((res) => {
       // Handle no surveys remaining that you haven't taken yet
-      if (res.res.status !== 200) {
-        throw new Error(`Error! status: ${res.res.status} body: ${res.body}`)
+      if (res.status !== 200) {
+        throw new Error(`Error! status: ${res.status}`)
       }
     })
 })
