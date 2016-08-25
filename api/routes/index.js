@@ -32,8 +32,7 @@ router.route('/guest-token')
 
 // decode the jwt token
 router.use((req, res, next) => {
-  const header = req.get('Authorization')
-  const base64Token = header.replace('Bearer ', '')
+  const base64Token = req.signedCookies.jwt
   let isExpired = false
   let decodedToken
   try {
@@ -60,7 +59,6 @@ router.use((req, res, next) => {
       ]
     }
   }
-
   req.jwt = decodedToken
   next()
 })

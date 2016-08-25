@@ -16,6 +16,7 @@ import { default as Immutable } from 'immutable'
 import { default as jwt } from 'jsonwebtoken'
 import { default as uuid } from 'node-uuid'
 import { default as device } from 'express-device'
+import { setCookies } from '../app/fetch'
 
 export function Init (webpackIsomorphicTools) {
   const app = express()
@@ -57,11 +58,15 @@ export function Init (webpackIsomorphicTools) {
       res.cookie('jwt', token, {
         signed: true,
         domain: process.env.HOST,
+        path: '/',
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 365 // 1 year
       })
 
-      req.signedCookies.jwt = token
+      // get the cookies from the res since none were sent through req
+      setCookies(res.get('set-cookie'))
+    } else {
+      setCookies(req.get('cookie'))
     }
     next()
   })
@@ -81,9 +86,6 @@ export function Init (webpackIsomorphicTools) {
           isMobileDevice: res.locals.is_mobile,
           viewSize: res.locals.is_mobile ? 1000 : 1600
         }
-      },
-      auth: {
-        jwt: req.signedCookies.jwt
       }
     }))
     const routes = getRoutes(store)

@@ -26,6 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "api-error-handler": "^1.0.0",
+    "axios": "^0.13.1",
     "babel-core": "^6.11.4",
     "babel-eslint": "^6.1.2",
     "babel-loader": "^6.2.4",
@@ -43,7 +44,6 @@
     "express": "^4.14.0",
     "express-device": "^0.4.2",
     "express-jwt-permissions": "^0.2.2",
-    "fetch-ponyfill": "^1.0.0",
     "immutable": "^3.8.1",
     "jsonwebtoken": "^7.1.9",
     "material-ui": "^0.15.3",
@@ -51,6 +51,7 @@
     "node-uuid": "^1.4.7",
     "npm-run-all": "^2.3.0",
     "passport": "^0.3.2",
+    "passport-json": "^1.2.0",
     "passport-local": "^1.0.0",
     "react": "^15.3.0",
     "react-addons-css-transition-group": "^15.3.0",

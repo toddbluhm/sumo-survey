@@ -1,27 +1,28 @@
-import { default as Fetch } from 'fetch-ponyfill'
+import { default as axios } from 'axios'
 import { default as BPromise } from 'bluebird'
 
-const fetch = Fetch({
-  Promise: BPromise
-})
-
 export const APIURL = `${process.env.API_URL}`
-let jwtToken
-export function setJWT (jwt) {
-  jwtToken = jwt
+export { axios as Fetch }
+
+let serverCookies
+export function setCookies (cookies) {
+  serverCookies = cookies
 }
-export { fetch as Fetch }
 
 export function FetchAPI (route, options = { headers: {} }) {
-  let headers = {}
-  if (jwtToken) {
-    headers = Object.assign({}, options.headers, {
-      Authorization: `Bearer ${jwtToken}`
-    })
+  let headers = {
+    'Content-Type': 'application/json; charset=utf-8',
+    Accept: 'application/json'
   }
 
-  return fetch(`${APIURL}${route}`, {
+  if (serverCookies && typeof window === 'undefined') {
+    headers.Cookie = serverCookies
+  }
+
+  return axios({
+    url: `${APIURL}${route}`,
     ...options,
-    headers
+    headers,
+    withCredentials: true
   })
 }

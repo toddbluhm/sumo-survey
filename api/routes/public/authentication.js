@@ -8,7 +8,18 @@ const guard = require('express-jwt-permissions')({
 })
 
 router.route('/login')
-  .post(passport.authenticate('local', { session: false }),
+  .post((req, res, next) => {
+    passport.authenticate('json', (err, user, info) => {
+      if (err) {
+        return next(err)
+      }
+      if (!user) {
+        return res.status(401).json(info).end()
+      }
+      req.user = user
+      next()
+    })(req, res, next)
+  },
     function (req, res) {
       // Create the admin jwt token
       const token = jwt.sign({
@@ -27,14 +38,13 @@ router.route('/login')
 
       res.cookie('jwt', token, {
         signed: true,
+        path: '/',
         domain: process.env.HOST,
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 365 // 1 year
       })
 
-      return res.status(200).json({
-        token
-      }).end()
+      return res.status(200).json().end()
     })
 
 router.route('/authenticated')
@@ -61,9 +71,7 @@ router.route('/logout')
       maxAge: 60 * 60 * 24 * 365 // 1 year
     })
 
-    return res.status(200).json({
-      token
-    }).end()
+    return res.status(200).json().end()
   })
 
 module.exports = router

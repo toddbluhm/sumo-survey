@@ -19,7 +19,9 @@ database.connect().then((db) => {
 
   // Useful middleware
   app.use(cors({
-    origin: `http://${process.env.HOST}:${process.env.PORT}`
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true
   }))
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))

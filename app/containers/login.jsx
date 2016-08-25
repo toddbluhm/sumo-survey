@@ -4,27 +4,38 @@ import { connect } from 'react-redux'
 import { push } from 'react-router-redux'
 import { TextField, RaisedButton } from 'material-ui'
 import { Main } from './Main'
-import { CardModal } from '../components/CardModal'
+import { CardModal } from '../components'
+import { login } from '../actions/auth'
 
-@connect(state => ({}), { push })
+@connect(state => ({
+  invalidEmail: state.getIn(['auth', 'invalidEmail']),
+  invalidPassword: state.getIn(['auth', 'invalidPassword'])
+}), { login, push })
 export class Login extends Component {
   static propTypes = {
+    invalidEmail: PropTypes.string,
+    invalidPassword: PropTypes.string,
     open: PropTypes.bool,
     toggleLoginModalActive: PropTypes.func,
-    push: PropTypes.func
+    push: PropTypes.func.isRequired,
+    login: PropTypes.func.isRequired
   }
 
   render () {
-    const { push } = this.props
+    const { invalidEmail, invalidPassword, login, push } = this.props
 
     const textNode = (
       <div>
         <TextField
+          ref={'email'}
+          errorText={invalidEmail}
           hintText={"jonnyappleseed@apple.com"}
           floatingLabelText={"Email"}
         />
         <br />
         <TextField
+          ref={'password'}
+          errorText={invalidPassword}
           hintText={"password"}
           floatingLabelText={"Password"}
           type={"password"}
@@ -33,8 +44,17 @@ export class Login extends Component {
     )
 
     const actionNode = [
-      <RaisedButton key={'login'} label={"Login"} primary style={{ marginRight: '12px' }} />,
-      <RaisedButton key={'cancel'} label={"Cancel"} onClick={() => push('/')} />
+      <RaisedButton key={'login'}
+        label={"Login"}
+        primary style={{ marginRight: '12px' }}
+        onClick={() => {
+          login(this.refs.email.getValue(), this.refs.password.getValue())
+            .then(() => push('/admin'))
+        }} />,
+      <RaisedButton key={'cancel'}
+        label={"Cancel"}
+        onClick={() => push('/')}
+        />
     ]
 
     return (

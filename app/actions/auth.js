@@ -1,29 +1,33 @@
 import { createAction } from 'redux-actions'
-import { Fetch, APIURL } from '../fetch'
+import { FetchAPI } from '../fetch'
 
 export const LOGIN = 'LOGIN'
 export const login = createAction(LOGIN, (email, password) => {
-  return Fetch(`${APIURL}/login`, {
+  return FetchAPI('/login', {
     method: 'POST',
-    body: {
+    data: {
       email,
-    password}
+      password
+    }
   })
-    .then((res) => {
+    .then(res => {
       if (res.status !== 200) {
-        throw new Error('Not authenticated.')
+        throw new Error(res.data.message)
       }
-      return res.json()
+      return res.data
     })
 })
 
+export const LOGOUT = 'LOGOUT'
+export const logout = createAction(LOGOUT, () => FetchAPI('/logout', { method: 'POST' }))
+
 export const AUTHENTICATED = 'AUTHENTICATED'
 export const authenticated = createAction(AUTHENTICATED, () => {
-  return Fetch(`${APIURL}/authenticated`)
+  return FetchAPI('/authenticated')
     .then((res) => {
       if (res.status !== 200) {
         throw new Error('Not authenticated.')
       }
-      return res.json()
+      return res.data
     })
 })

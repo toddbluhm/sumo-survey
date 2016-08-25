@@ -2,7 +2,7 @@
 
 const db = require('./db').database
 const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy
+const JsonStrategy = require('passport-json').Strategy
 const valid = require('validator')
 
 passport.serializeUser((user, done) => {
@@ -17,11 +17,10 @@ passport.deserializeUser((id, done) => {
     .catch(done)
 })
 
-passport.use(new LocalStrategy({
-  usernameField: 'email'
+passport.use(new JsonStrategy({
+  usernameProp: 'email'
 },
   (email, password, done) => {
-
     // Make sure we were given an email address
     if (!valid.isEmail(email)) {
       return done(null, false, {
@@ -31,7 +30,9 @@ passport.use(new LocalStrategy({
 
     // Search fo the email in the db
     db.User.findOne({
-      email: email
+      where: {
+        email
+      }
     })
       .then((user) => {
         if (!user) {
@@ -48,8 +49,8 @@ passport.use(new LocalStrategy({
       })
       .catch((e) => {
         console.log(e.message || e)
-        done(null, false, {
-          message: 'Incorrect email/password provided.'
+        return done(null, false, {
+          message: e.message
         })
       })
   }
