@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import MediaQuery from 'react-responsive'
 import { push } from 'react-router-redux'
 import { AppBar as AppBarUI, Drawer, MenuItem } from 'material-ui'
-import { ActionExitToApp, ContentAddBox } from 'material-ui/svg-icons'
+import { ActionExitToApp, ContentAddBox, ActionHome } from 'material-ui/svg-icons'
 import { AppBarButton } from './'
 import { toggleAppDrawerActive } from '../actions/ui/app'
 
@@ -18,6 +18,16 @@ export class AppBar extends Component {
     toggleAppDrawerActive: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
     viewSize: PropTypes.number.isRequired
+  }
+
+  viewSignUp () {
+    this.props.push('/signup')
+    this.props.toggleAppDrawerActive()
+  }
+
+  viewLogin () {
+    this.props.push('/login')
+    this.props.toggleAppDrawerActive()
   }
 
   render () {
@@ -36,8 +46,13 @@ export class AppBar extends Component {
         {/* Desktop or Laptop*/}
         <MediaQuery minDeviceWidth={1225} values={{deviceWidth: viewSize}}>
           <AppBarUI showMenuIconButton={false} title={title}>
-            <AppBarButton label={signUpBtnLabel} icon={signUpBtnIcon} secondary onClick={() => push('/signup')} />
-            <AppBarButton label={loginBtnLabel} icon={loginBtnIcon} onClick={() => push('/login')} />
+            <AppBarButton label={signUpBtnLabel}
+              icon={signUpBtnIcon}
+              secondary
+              onClick={this.viewSignUp.bind(this)} />
+            <AppBarButton label={loginBtnLabel}
+              icon={loginBtnIcon}
+              onClick={this.viewLogin.bind(this)} />
           </AppBarUI>
         </MediaQuery>
         {/* Table or mobile phone*/}
@@ -53,8 +68,18 @@ export class AppBar extends Component {
             open={drawerActive}
             docked={false}
             onRequestChange={toggleAppDrawerActive}>
-            <MenuItem leftIcon={signUpBtnIcon} primaryText={signUpBtnLabel} />
-            <MenuItem leftIcon={loginBtnIcon} primaryText={loginBtnLabel} />
+            <MenuItem leftIcon={<ActionHome />}
+              primaryText={'Home'}
+              onClick={() => {
+                push('/')
+                toggleAppDrawerActive()
+              }} />
+            <MenuItem leftIcon={signUpBtnIcon}
+              primaryText={signUpBtnLabel}
+              onClick={this.viewSignUp.bind(this)} />
+            <MenuItem leftIcon={loginBtnIcon}
+              primaryText={loginBtnLabel}
+              onClick={this.viewLogin.bind(this)} />
           </Drawer>
         </MediaQuery>
       </div>
