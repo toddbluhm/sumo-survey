@@ -60,6 +60,7 @@ export function Init (webpackIsomorphicTools) {
         domain: process.env.HOST,
         path: '/',
         httpOnly: true,
+        sameSite: 'Strict',
         maxAge: 60 * 60 * 24 * 365 // 1 year
       })
 

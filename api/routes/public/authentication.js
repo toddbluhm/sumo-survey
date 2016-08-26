@@ -41,6 +41,7 @@ router.route('/login')
         path: '/',
         domain: process.env.HOST,
         httpOnly: true,
+        sameSite: 'Strict',
         maxAge: 60 * 60 * 24 * 365 // 1 year
       })
 
@@ -68,6 +69,7 @@ router.route('/logout')
       signed: true,
       domain: process.env.HOST,
       httpOnly: true,
+      sameSite: 'Strict',
       maxAge: 60 * 60 * 24 * 365 // 1 year
     })
 

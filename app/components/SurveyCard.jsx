@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { getRandomSurvey, dismissSurvey } from '../actions/survey'
+import { getRandomSurvey, dismissSurvey, answerSurvey } from '../actions/survey'
 import MediaQuery from 'react-responsive'
 import { Card, CardActions, CardTitle, CardText, RaisedButton, IconButton } from 'material-ui'
 import { NavigationClose } from 'material-ui/svg-icons'
@@ -8,19 +8,20 @@ import { grey300, grey500 } from 'material-ui/styles/colors'
 
 @connect(
   state => ({
-    question: state.getIn(['survey', 'question']) ? state.getIn(['survey', 'question']).toJS() : null,
+    question: state.getIn(['survey', 'question']),
     surveyLoading: state.getIn(['survey', 'loading']),
     viewSize: state.getIn(['ui', 'device', 'viewSize'])
-  }), { getRandomSurvey, dismissSurvey })
+  }), { getRandomSurvey, dismissSurvey, answerSurvey })
 export class SurveyCard extends Component {
   static propTypes = {
     // State
     question: PropTypes.object,
     surveyLoading: PropTypes.bool.isRequired,
+    viewSize: PropTypes.number.isRequired,
     // Action methods
     dismissSurvey: PropTypes.func.isRequired,
     getRandomSurvey: PropTypes.func.isRequired,
-    viewSize: PropTypes.number.isRequired
+    answerSurvey: PropTypes.func.isRequired
   }
 
   getStyles () {
@@ -51,10 +52,27 @@ export class SurveyCard extends Component {
     }
   }
 
+  answerSurvey (answerId) {
+    const { answerSurvey, getRandomSurvey } = this.props
+    let { question } = this.props
+
+    if (question) {
+      question = question.toJS()
+    }
+
+    return answerSurvey(question.id, answerId)
+      .then(() => getRandomSurvey())
+  }
+
   render () {
     const styles = this.getStyles()
     const { getRandomSurvey, dismissSurvey } = this.props
-    const { question, surveyLoading, viewSize } = this.props
+    const { surveyLoading, viewSize } = this.props
+    let { question } = this.props
+
+    if (question) {
+      question = question.toJS()
+    }
 
     if (surveyLoading) {
       return (
@@ -92,7 +110,11 @@ export class SurveyCard extends Component {
           {/* Desktop or Laptop*/}
           <MediaQuery minDeviceWidth={1225} values={{deviceWidth: viewSize}}>
             {question.answers.map(answer =>
-              <RaisedButton key={answer.id} style={styles.desktop.ActionButtonStyles} label={answer.text} primary />
+              <RaisedButton key={answer.id}
+                style={styles.desktop.ActionButtonStyles}
+                label={answer.text}
+                primary
+                onClick={() => this.answerSurvey(answer.id)} />
             )}
           </MediaQuery>
           {/* Table or mobile phone*/}

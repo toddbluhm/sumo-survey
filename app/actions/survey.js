@@ -22,3 +22,13 @@ export const DISMISS_SURVEY = 'DISMISS_SURVEY'
 export const dismissSurvey = createAction(DISMISS_SURVEY, (surveyId) => {
   return FetchAPI(`/survey/${surveyId}/dismiss`, { method: 'POST' })
 })
+
+export const ANSWER_SURVEY = 'ANSWER_SURVEY'
+export const answerSurvey = createAction(ANSWER_SURVEY, (surveyId, answerId) => {
+  return FetchAPI(`/survey/${surveyId}`, {
+    method: 'POST',
+    data: {
+      answerId
+    }
+  })
+})

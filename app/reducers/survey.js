@@ -1,4 +1,4 @@
-import { GET_RANDOM_SURVEY, DISMISS_SURVEY } from '../actions/survey'
+import { GET_RANDOM_SURVEY, DISMISS_SURVEY, ANSWER_SURVEY } from '../actions/survey'
 import { handleActions } from 'redux-actions'
 import { default as Immutable } from 'immutable'
 
@@ -24,6 +24,15 @@ export const reducer = handleActions({
     return state.set('question', Immutable.fromJS(action.payload))
   },
   [DISMISS_SURVEY]: (state, action) => {
+    if (action.error) {
+      return state
+    }
+
+    return state
+      .delete('question')
+      .set('loading', true)
+  },
+  [ANSWER_SURVEY]: (state, action) => {
     if (action.error) {
       return state
     }
