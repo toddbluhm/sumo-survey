@@ -15,8 +15,6 @@ export class Login extends Component {
   static propTypes = {
     invalidEmail: PropTypes.string,
     invalidPassword: PropTypes.string,
-    open: PropTypes.bool,
-    toggleLoginModalActive: PropTypes.func,
     push: PropTypes.func.isRequired,
     login: PropTypes.func.isRequired
   }

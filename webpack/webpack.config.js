@@ -21,9 +21,10 @@ module.exports = {
     ]
   },
   entry: [
+    `webpack-dev-server/client?http://${process.env.HOST}:${process.env.WEBPACK_PORT}`,
+    'webpack/hot/only-dev-server',
     'react-hot-loader/patch',
-    `webpack-hot-middleware/client?path=http://${process.env.HOST}:${process.env.WEBPACK_PORT}/__webpack_hmr`,
-    'classnames',
+    // 'classnames',
     './app/client.jsx'
   ],
   output: {

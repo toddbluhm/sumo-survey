@@ -10,11 +10,9 @@ export const login = createAction(LOGIN, (email, password) => {
       password
     }
   })
-    .then(res => {
-      if (res.status !== 200) {
-        throw new Error(res.data.message)
-      }
-      return res.data
+    .then(res => res.data)
+    .catch(e => {
+      throw new Error(e.response.data.message)
     })
 })
 
@@ -24,10 +22,8 @@ export const logout = createAction(LOGOUT, () => FetchAPI('/logout', { method: '
 export const AUTHENTICATED = 'AUTHENTICATED'
 export const authenticated = createAction(AUTHENTICATED, () => {
   return FetchAPI('/authenticated')
-    .then((res) => {
-      if (res.status !== 200) {
-        throw new Error('Not authenticated.')
-      }
-      return res.data
+    .then((res) => res.data)
+    .catch(e => {
+      throw new Error('Not authenticated.')
     })
 })
