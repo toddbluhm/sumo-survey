@@ -45,7 +45,9 @@ router.route('/login')
         maxAge: 60 * 60 * 24 * 365 // 1 year
       })
 
-      return res.status(200).json().end()
+      return res.status(200).json({
+        token
+      }).end()
     })
 
 router.route('/authenticated')
@@ -73,7 +75,9 @@ router.route('/logout')
       maxAge: 60 * 60 * 24 * 365 // 1 year
     })
 
-    return res.status(200).json().end()
+    return res.status(200).json({
+      token
+    }).end()
   })
 
 module.exports = router

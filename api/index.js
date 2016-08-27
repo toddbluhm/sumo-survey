@@ -21,7 +21,8 @@ database.connect().then((db) => {
   app.use(cors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true
+    credentials: true,
+    allowedHeaders: 'Content-Type,Accepts,Authorization,X-Requested-With'
   }))
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))

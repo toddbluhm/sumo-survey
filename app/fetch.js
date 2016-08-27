@@ -1,5 +1,4 @@
 import { default as axios } from 'axios'
-import { default as BPromise } from 'bluebird'
 
 export const APIURL = `${process.env.API_URL}`
 export { axios as Fetch }
@@ -12,7 +11,8 @@ export function setCookies (cookies) {
 export function FetchAPI (route, options = { headers: {} }) {
   let headers = {
     'Content-Type': 'application/json; charset=utf-8',
-    Accept: 'application/json'
+    Accept: 'application/json',
+    'X-Requested-With': 'XMLHttpRequest'
   }
 
   if (serverCookies && typeof window === 'undefined') {

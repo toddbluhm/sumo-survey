@@ -32,34 +32,64 @@ router.route('/guest-token')
 
 // decode the jwt token
 router.use((req, res, next) => {
-  const base64Token = req.signedCookies.jwt
-  let isExpired = false
-  let decodedToken
-  try {
-    decodedToken = jwt.verify(base64Token, process.env.JWT_SECRET, {
-      audience: process.env.JWT_AUDIENCE,
-      issuer: process.env.JWT_ISSUER,
-      subject: process.env.JWT_SUBJECT
-    })
-  } catch (e) {
-    // if not expired then exit with error
-    if (!e.message.match(/jwt expired/)) {
-      return next(e)
+  let base64Token
+
+  // If this is an AJAX request then the token should be in the cookie
+  if (req.xhr) {
+    base64Token = req.signedCookies.jwt
+    if (!base64Token) {
+      return res.status(400).json({
+        message: 'Error, Missing jwt cookie.'
+      }).end()
     }
-    isExpired = true
+  // Otherwise we expect the token in the Authorization header
+  } else {
+    const header = req.get('Authorization')
+    if (header) {
+      base64Token = header.replace('Bearer ', '')
+    }
   }
 
-  // If the token was expired then just try to get the guest data out
-  if (isExpired) {
-    decodedToken = jwt.decode(base64Token)
-    decodedToken = {
-      sessionId: decodedToken.sessionId,
+  // If the token exists then decode it
+  if (base64Token) {
+    let isExpired = false
+    let decodedToken
+    try {
+      decodedToken = jwt.verify(base64Token, process.env.JWT_SECRET, {
+        audience: process.env.JWT_AUDIENCE,
+        issuer: process.env.JWT_ISSUER,
+        subject: process.env.JWT_SUBJECT
+      })
+    } catch (e) {
+      // if not expired then exit with error
+      if (!e.message.match(/jwt expired/)) {
+        return next(e)
+      }
+      isExpired = true
+    }
+
+    // If the token was expired then just try to get the guest data out (session data)
+    if (isExpired) {
+      decodedToken = jwt.decode(base64Token)
+      decodedToken = {
+        sessionId: decodedToken.sessionId,
+        permissions: [
+          'guest'
+        ]
+      }
+    }
+    req.jwt = decodedToken
+  // If the token did not exist and this is not an Ajax request then just generate a new guest token
+  } else {
+    // Create the guest jwt token for this request
+    req.jwt = {
+      sessionId: uuid.v4(),
       permissions: [
         'guest'
       ]
     }
   }
-  req.jwt = decodedToken
+
   next()
 })
 
