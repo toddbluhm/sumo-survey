@@ -22,7 +22,7 @@ export const logout = createAction(LOGOUT, () => FetchAPI('/logout', { method: '
 export const AUTHENTICATED = 'AUTHENTICATED'
 export const authenticated = createAction(AUTHENTICATED, () => {
   return FetchAPI('/authenticated')
-    .then((res) => res.data)
+    // .then((res) => res.data)
     .catch(e => {
       throw new Error('Not authenticated.')
     })

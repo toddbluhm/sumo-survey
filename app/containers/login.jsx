@@ -19,8 +19,21 @@ export class Login extends Component {
     login: PropTypes.func.isRequired
   }
 
+  login () {
+    const { login, push } = this.props
+
+    login(this.refs.email.getValue(), this.refs.password.getValue())
+      .then(() => push('/admin'))
+  }
+
+  loginOnEnter (e) {
+    if (e.key === 'Enter') {
+      this.login()
+    }
+  }
+
   render () {
-    const { invalidEmail, invalidPassword, login, push } = this.props
+    const { invalidEmail, invalidPassword, push } = this.props
 
     const textNode = (
       <div>
@@ -37,6 +50,7 @@ export class Login extends Component {
           hintText={"password"}
           floatingLabelText={"Password"}
           type={"password"}
+          onKeyUp={this.loginOnEnter.bind(this)}
         />
       </div>
     )
@@ -45,10 +59,7 @@ export class Login extends Component {
       <RaisedButton key={'login'}
         label={"Login"}
         primary style={{ marginRight: '12px' }}
-        onClick={() => {
-          login(this.refs.email.getValue(), this.refs.password.getValue())
-            .then(() => push('/admin'))
-        }} />,
+        onClick={this.login.bind(this)} />,
       <RaisedButton key={'cancel'}
         label={"Cancel"}
         onClick={() => push('/')}

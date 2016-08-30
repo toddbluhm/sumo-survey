@@ -4,6 +4,8 @@ const db = require('./db').database
 const passport = require('passport')
 const JsonStrategy = require('passport-json').Strategy
 const valid = require('validator')
+const jwt = require('jsonwebtoken')
+const uuid = require('node-uuid')
 
 passport.serializeUser((user, done) => {
   done(null, user.id)
@@ -55,3 +57,33 @@ passport.use(new JsonStrategy({
       })
   }
 ))
+
+module.exports.GenerateGuestToken = function GenerateGuestToken (sessionId = uuid.v4()) {
+  // create a new token with guest permissions
+  return jwt.sign({
+    sessionId,
+    permissions: [
+      'guest'
+    ]
+  }, process.env.JWT_SECRET, {
+    issuer: process.env.JWT_ISSUER,
+    audience: process.env.JWT_AUDIENCE,
+    subject: process.env.JWT_SUBJECT
+  })
+}
+
+module.exports.GenerateAdminToken = function GenerateAdminToken (sessionId, userId) {
+  // create a new token with guest permissions
+  return jwt.sign({
+    sessionId: sessionId,
+    user: userId,
+    permissions: [
+      'guest',
+      'admin'
+    ]
+  }, process.env.JWT_SECRET, {
+    issuer: process.env.JWT_ISSUER,
+    audience: process.env.JWT_AUDIENCE,
+    subject: process.env.JWT_SUBJECT
+  })
+}

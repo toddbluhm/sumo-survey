@@ -7,6 +7,7 @@ import { reducer as auth } from './auth'
 import { reducer as test } from './test'
 import { reducer as survey } from './survey'
 import { reducer as signup } from './signup'
+import { reducer as validations } from './validations'
 
 // Set the mutability/immutability functions
 setToImmutableStateFunc((mutableState) => Immutable.fromJS(mutableState))
@@ -18,6 +19,7 @@ export const rootReducer = combineReducers({
   test,
   survey,
   signup,
+  validations,
   ui,
   routing: routerReducer
 })

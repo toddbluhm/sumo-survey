@@ -13,10 +13,9 @@ import { configureStore } from '../app/store'
 import { getRoutes } from '../app/routes'
 import { Html } from './html'
 import { default as Immutable } from 'immutable'
-import { default as jwt } from 'jsonwebtoken'
-import { default as uuid } from 'node-uuid'
 import { default as device } from 'express-device'
 import { setCookies } from '../app/fetch'
+import { default as axios } from 'axios'
 
 export function Init (webpackIsomorphicTools) {
   const app = express()
@@ -41,34 +40,31 @@ export function Init (webpackIsomorphicTools) {
   // }
 
   app.use((req, res, next) => {
+    console.log(`cookies: ${JSON.stringify(req.cookies)}, signedCookies: ${JSON.stringify(req.signedCookies)}`)
     // If no cookie then this must be a first time visitor
-    if (!req.signedCookies.jwt) {
+    if (!req.cookies.jwt) {
+      console.log('no cookie, new token created')
       // Create the guest jwt token
-      const token = jwt.sign({
-        sessionId: uuid.v4(),
-        permissions: [
-          'guest'
-        ]
-      }, process.env.JWT_SECRET, {
-        issuer: process.env.JWT_ISSUER,
-        audience: process.env.JWT_AUDIENCE,
-        subject: process.env.JWT_SUBJECT
-      })
-
-      res.cookie('jwt', token, {
-        signed: true,
-        domain: process.env.HOST,
-        path: '/',
-        httpOnly: true,
-        sameSite: 'Strict',
-        maxAge: 60 * 60 * 24 * 365 // 1 year
-      })
-
-      // get the cookies from the res since none were sent through req
-      setCookies(res.get('set-cookie'))
-    } else {
-      setCookies(req.get('cookie'))
+      return axios.get(`${process.env.API_URL}/guest-token`)
+        .then(({ data }) => {
+          res.cookie('jwt', data.token, {
+            // signed: true,
+            domain: null, //process.env.HOST,
+            path: '/',
+            httpOnly: true,
+            sameSite: 'Strict',
+            maxAge: 60 * 60 * 24 * 365 // 1 year
+          })
+          // get the cookies from the res since none were sent through req
+          setCookies(res.get('set-cookie'))
+          next()
+        })
+        .catch(e => {
+          console.log(e.message || e)
+          throw e
+        })
     }
+    setCookies(req.get('cookie'))
     next()
   })
 
@@ -95,9 +91,11 @@ export function Init (webpackIsomorphicTools) {
     // the original request, including the query string.
     match({ routes, location: req.url }, (error, redirectLocation, renderProps) => {
       if (error) {
+        console.log(error)
         return res.status(500).send(error.message)
       } else if (redirectLocation) {
-        return res.redirect(302, redirectLocation.pathname + redirectLocation.search)
+        console.log(redirectLocation.pathname + redirectLocation.search)
+        return res.redirect(301, redirectLocation.pathname + redirectLocation.search)
       } else if (renderProps) {
         // use load on server to wait for async data
         return loadOnServer({ ...renderProps, store }).then(() => {

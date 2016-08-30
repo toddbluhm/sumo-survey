@@ -5,12 +5,13 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 injectTapEventPlugin()
 
 import React from 'react'
-import { Route, IndexRoute } from 'react-router'
+import { Route, IndexRoute, Redirect } from 'react-router'
 import { App } from './containers/App'
 import { Main } from './containers/Main'
 import { Login } from './containers/Login'
 import { SignUp } from './containers/SignUp'
 import { Admin } from './containers/Admin'
+import { Account } from './containers/Account'
 import { authenticated as authenticatedAction } from './actions/auth'
 
 /*
@@ -24,11 +25,12 @@ export function getRoutes (store) {
     if (!loaded) {
       return store.dispatch(authenticatedAction())
         .then(requireAuth.bind(this, nextState, replace, callback))
+        .catch(requireAuth.bind(this, nextState, replace, callback))
     }
 
     if (!authenticated) {
       replace({
-        pathname: '/login',
+        pathname: '/',
         state: { nextPathname: nextState.location.pathname }
       })
     }
@@ -45,12 +47,14 @@ export function getRoutes (store) {
   //   callback()
   // }
 
-  return [
-    <Route key={'root'} path={'/'} component={App} >
+  return (
+    <Route path={'/'} component={App} >
       <IndexRoute component={Main} />
       <Route path={'login'} component={Login} />
       <Route path={'signup'} component={SignUp} />
-    </Route>,
-    <Route key={'admin'} path={'/admin'} component={Admin} onEnter={requireAuth} />
-  ]
+      <Route path={'admin/dashboard'} component={Admin} onEnter={requireAuth} />
+      <Route path={'admin/account'} component={Account} onEnter={requireAuth} />
+      <Redirect from={'admin'} to={'admin/dashboard'} />
+    </Route>
+  )
 }

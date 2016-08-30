@@ -2,10 +2,19 @@
 
 const router = require('express').Router()
 const passport = require('passport')
-const jwt = require('jsonwebtoken')
 const guard = require('express-jwt-permissions')({
   requestProperty: 'jwt'
 })
+const { GenerateGuestToken, GenerateAdminToken } = require('../../auth')
+
+// Expose a route for getting a new guest token
+router.route('/guest-token')
+  .get((req, res) => {
+    const token = GenerateGuestToken()
+    return res.status(200).json({
+      token
+    }).end()
+  })
 
 router.route('/login')
   .post((req, res, next) => {
@@ -22,24 +31,11 @@ router.route('/login')
   },
     function (req, res) {
       // Create the admin jwt token
-      const token = jwt.sign({
-        sessionId: req.jwt.sessionId,
-        id: req.user.id,
-        permissions: [
-          'admin',
-          'guest'
-        ]
-      }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
-        issuer: process.env.JWT_ISSUER,
-        audience: process.env.JWT_AUDIENCE,
-        subject: process.env.JWT_SUBJECT
-      })
-
+      const token = GenerateAdminToken(req.jwt.sessionId, req.user.id)
       res.cookie('jwt', token, {
-        signed: true,
+        // signed: true,
         path: '/',
-        domain: process.env.HOST,
+        domain: null, //process.env.HOST,
         httpOnly: true,
         sameSite: 'Strict',
         maxAge: 60 * 60 * 24 * 365 // 1 year
@@ -56,20 +52,10 @@ router.route('/authenticated')
 router.route('/logout')
   .post(guard.check('admin'), (req, res) => {
     // Create the guest jwt token
-    const token = jwt.sign({
-      sessionId: req.jwt.sessionId,
-      permissions: [
-        'guest'
-      ]
-    }, process.env.JWT_SECRET, {
-      issuer: process.env.JWT_ISSUER,
-      audience: process.env.JWT_AUDIENCE,
-      subject: process.env.JWT_SUBJECT
-    })
-
+    const token = GenerateGuestToken(req.jwt.sessionId)
     res.cookie('jwt', token, {
-      signed: true,
-      domain: process.env.HOST,
+      // signed: true,
+      domain: null, //process.env.HOST,
       httpOnly: true,
       sameSite: 'Strict',
       maxAge: 60 * 60 * 24 * 365 // 1 year

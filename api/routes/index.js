@@ -10,33 +10,14 @@ const db = require('../db').database
 const jwt = require('jsonwebtoken')
 const uuid = require('node-uuid')
 
-// Expose a route for getting a new guest token
-router.route('/guest-token')
-  .get((req, res) => {
-    // create a new token with guest permissions
-    const token = jwt.sign({
-      sessionId: uuid.v4(),
-      permissions: [
-        'guest'
-      ]
-    }, process.env.JWT_SECRET, {
-      issuer: process.env.JWT_ISSUER,
-      audience: process.env.JWT_AUDIENCE,
-      subject: process.env.JWT_SUBJECT
-    })
-
-    return res.status(200).json({
-      token
-    }).end()
-  })
-
 // decode the jwt token
 router.use((req, res, next) => {
   let base64Token
 
   // If this is an AJAX request then the token should be in the cookie
   if (req.xhr) {
-    base64Token = req.signedCookies.jwt
+    console.log('xhr')
+    base64Token = req.cookies.jwt
     if (!base64Token) {
       return res.status(400).json({
         message: 'Error, Missing jwt cookie.'
@@ -52,6 +33,7 @@ router.use((req, res, next) => {
 
   // If the token exists then decode it
   if (base64Token) {
+    console.log('base64token')
     let isExpired = false
     let decodedToken
     try {
@@ -70,6 +52,7 @@ router.use((req, res, next) => {
 
     // If the token was expired then just try to get the guest data out (session data)
     if (isExpired) {
+      console.log('expired')
       decodedToken = jwt.decode(base64Token)
       decodedToken = {
         sessionId: decodedToken.sessionId,
@@ -79,6 +62,7 @@ router.use((req, res, next) => {
       }
     }
     req.jwt = decodedToken
+    console.log(req.jwt)
   // If the token did not exist and this is not an Ajax request then just generate a new guest token
   } else {
     // Create the guest jwt token for this request

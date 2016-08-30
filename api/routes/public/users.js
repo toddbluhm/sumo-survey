@@ -22,7 +22,7 @@ router.route('/users')
     }
 
     // Validate that the email is an email
-    if (!valid.isEmail(req.body.email)) {
+    if (!req.body.email || !valid.isEmail(req.body.email)) {
       return res.status(400).json({
         message: 'Invalid email address provided.',
         name: 'email',

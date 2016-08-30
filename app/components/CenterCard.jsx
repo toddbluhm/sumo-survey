@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react'
-import MediaQuery from 'react-responsive'
-import { Card, CardActions, CardHeader, CardText, RaisedButton } from 'material-ui'
+import { Card, CardActions, CardHeader, CardText } from 'material-ui'
 
-export class Main extends Component {
+export class CenterCard extends Component {
   static propTypes = {
     title: PropTypes.string,
     headerNode: PropTypes.node,
@@ -22,6 +21,7 @@ export class Main extends Component {
 
   render () {
     const { title, headerNode, textNode, actionNode } = this.props
+    const styles = this.getStyles()
 
     return (
       <Card style={styles.cardStyle}>

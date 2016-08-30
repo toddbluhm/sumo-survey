@@ -30,6 +30,11 @@ export class AppBar extends Component {
     this.props.toggleAppDrawerActive()
   }
 
+  viewHome () {
+    this.props.push('/')
+    this.props.toggleAppDrawerActive()
+  }
+
   render () {
     // Store some info up here to avoid duplication later
     const title = 'Sumo Survey'
@@ -37,9 +42,11 @@ export class AppBar extends Component {
     const signUpBtnIcon = <ContentAddBox />
     const loginBtnLabel = 'Login'
     const loginBtnIcon = <ActionExitToApp />
+    const homeBtnLabel = 'Home'
+    const homeBtnIcon = <ActionHome />
 
     // State and actions from props
-    const { drawerActive, toggleAppDrawerActive, push, viewSize } = this.props
+    const { drawerActive, toggleAppDrawerActive, viewSize } = this.props
 
     return (
       <div>
@@ -68,12 +75,9 @@ export class AppBar extends Component {
             open={drawerActive}
             docked={false}
             onRequestChange={toggleAppDrawerActive}>
-            <MenuItem leftIcon={<ActionHome />}
-              primaryText={'Home'}
-              onClick={() => {
-                push('/')
-                toggleAppDrawerActive()
-              }} />
+            <MenuItem leftIcon={homeBtnIcon}
+              primaryText={homeBtnLabel}
+              onClick={this.viewHome.bind(this)} />
             <MenuItem leftIcon={signUpBtnIcon}
               primaryText={signUpBtnLabel}
               onClick={this.viewSignUp.bind(this)} />
